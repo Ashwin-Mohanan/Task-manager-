@@ -1,0 +1,106 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Tagged Task Manager</h2>
+    <div class="row">
+        
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <button type="button" onclick="window.location.href='/'" class="btn btn-primary">
+                    Back
+                </button>
+                <button type="button" onclick="window.location.href='/taskCreator'" class="btn btn-primary">
+                    Create new
+                </button>
+            </div> 
+
+    </div>
+    <div class="row">
+    <table class="table">
+        <div class="TabRows">
+        
+        <thead>
+            <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">
+                Tags
+            </th>
+            <th>
+                Type of tag
+            </th>
+            <th>
+                Action
+            </th>
+            </tr>
+        </thead>
+            <tbody class="DynRows">
+                {% for d in data %}
+                <tr>
+                    
+                    <td>
+                        <input value="{{ d.title }}" type="text" class="form-control TaskTitle" id="TaskTitle_{{ d.id }}" placeholder="Task Name" required> 
+                    </td>
+                    <td>
+                        <textarea class="form-control TaskDescription" id="TaskDescription_{{ d.id }}" placeholder="Task Description" required>{{ d.description }}</textarea>
+                    </td>
+                    <td>
+                        <div id="datepicker">
+                            <input type="date" value="{{ d.due_date|date:'Y-m-d' }}" class="form-control due_date" id="due_date_{{ d.id }}" name="due_date" required>
+                        </div>
+                    </td>
+                    <td id="tagType_{{ d.id }}">
+                        {% if d.tag_type == "Custom Add" %}
+                        <input type="text" value="{{ d.tag }}" class="form-control tag-input" id="tag-input_{{ d.id }}" placeholder="Type a tag and press Enter">
+                        {% else %}
+                        <input type="file" class="form-control files" id="files_{{ d.id }}" name="files" accept=".pdf,image/*">
+
+                        <small class="text-muted" id="fileNames_{{ d.id }}">
+                            <a href="/static/TaskFiles/{{ d.tag }}" target="_blank" download>
+                                {{ d.tag }}
+                            </a>
+                        </small>
+
+                        {% endif %}
+
+                    </td>
+                    <td>
+                        <select class="selectpicker typeofTag" id="typeofTag_{{ d.id }}" onchange="typeofTag(this)">
+                            {% if d.tag_type == "Custom Add" %}
+                                <option value="Custom Add" selected>Custom Add</option>
+                                <option value="select-files">Select Files</option>
+                            {% else %}
+                                <option value="Custom Add">Custom Add</option>
+                                <option value="select-files" selected>Select Files</option>
+                            {% endif %}
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="AddRow() " disabled>+</button>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </div>
+    </table>
+    
+    </br>
+    <div class="col-md-12" style="padding-left: 89%;">
+        <button button type="submit" class="btn btn-primary" onclick="createTask()">Create Task</button>
+
+    </div>
+
+    
+    </div>
+</div>
+
+<script>
+     window.taskId ="{{ id }}";
+</script>
+<script src="{% static 'Js/editTaskCreator.js' %}"></script>
+
+{% endblock %}
